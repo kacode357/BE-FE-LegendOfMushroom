@@ -74,10 +74,12 @@ if (!diagnosticsMode) {
   const authRoutes = require("./entities/auth/auth.routes");
   const accessRoutes = require("./entities/access/access.routes");
   const packageRoutes = require("./entities/package/package.routes");
+  const notificationRoutes = require("./entities/notification/notification.routes");
 
   app.use("/api/auth", authRoutes);
   app.use("/api/access", accessRoutes);
   app.use("/api/packages", packageRoutes);
+  app.use("/api/notifications", notificationRoutes);
 } else {
   console.warn(
     "Diagnostics mode enabled (ALLOW_START_WITHOUT_DB=true): skipping /api routes that require DB"

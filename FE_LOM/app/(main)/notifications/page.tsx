@@ -46,14 +46,6 @@ export default function NotificationsPage() {
       const data = await listNotificationsByPackage(packageId);
       const notif = data.items.length > 0 ? data.items[0] : null;
       setNotification(notif);
-      
-      if (notif) {
-        setTitle(notif.title);
-        setContent(notif.content || "");
-      } else {
-        setTitle("");
-        setContent("");
-      }
     } catch (err: unknown) {
       setError(getApiErrorMessage(err));
     } finally {
@@ -70,10 +62,18 @@ export default function NotificationsPage() {
       loadNotification(selectedPkg.id);
     } else {
       setNotification(null);
+    }
+  }, [selectedPkg]);
+
+  useEffect(() => {
+    if (notification) {
+      setTitle(notification.title);
+      setContent(notification.content || "");
+    } else {
       setTitle("");
       setContent("");
     }
-  }, [selectedPkg]);
+  }, [notification]);
 
   async function onSave() {
     if (!canSubmit || !selectedPkg) return;
@@ -94,11 +94,6 @@ export default function NotificationsPage() {
     } finally {
       setSubmitting(false);
     }
-  }
-
-  function parseContentLines(content: string): string[] {
-    if (!content) return [];
-    return content.split(".").map(line => line.trim()).filter(line => line.length > 0);
   }
 
   return (
@@ -182,7 +177,7 @@ export default function NotificationsPage() {
                   <div>
                     <label className="text-sm font-medium">
                       Nội dung{" "}
-                      <span className="text-foreground/50">(mỗi câu kết thúc bằng &quot;.&quot;)</span>
+                      <span className="text-foreground/50">(mỗi câu kết thúc bằng dấu chấm)</span>
                     </label>
                     <textarea
                       value={content}
@@ -192,7 +187,7 @@ export default function NotificationsPage() {
                       placeholder="VD: Câu đầu tiên. Câu thứ hai. Câu thứ ba."
                     />
                     <p className="mt-1 text-xs text-foreground/50">
-                      Mỗi câu kết thúc bằng &quot;.&quot; sẽ được hiển thị trên 1 dòng riêng
+                      Mỗi câu kết thúc bằng dấu chấm sẽ được hiển thị trên 1 dòng riêng
                     </p>
                   </div>
 
@@ -201,12 +196,16 @@ export default function NotificationsPage() {
                     <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-4">
                       <p className="mb-2 text-xs font-medium text-foreground/70">Xem trước:</p>
                       <ul className="space-y-1.5 text-sm">
-                        {parseContentLines(content).map((line, idx) => (
-                          <li key={idx} className="flex gap-2">
-                            <span className="text-foreground/50">•</span>
-                            <span>{line}</span>
-                          </li>
-                        ))}
+                        {content
+                          .split(".")
+                          .map(line => line.trim())
+                          .filter(line => line.length > 0)
+                          .map((line, idx) => (
+                            <li key={idx} className="flex gap-2">
+                              <span className="text-foreground/50">•</span>
+                              <span>{line}</span>
+                            </li>
+                          ))}
                       </ul>
                     </div>
                   )}

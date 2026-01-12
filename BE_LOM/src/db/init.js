@@ -15,6 +15,7 @@ async function initDatabase() {
   require("../entities/user/user.model");
   require("../entities/package/package.model");
   require("../entities/access/access.model");
+  require("../entities/notification/notification.model");
 
   await sequelize.authenticate();
 
