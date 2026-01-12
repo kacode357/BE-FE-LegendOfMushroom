@@ -31,8 +31,9 @@ function normalizeCheckAccessPayload(payload) {
   const server = typeof data.server === "string" ? data.server.trim() : "";
   const name = typeof data.name === "string" ? data.name.trim() : "";
   const avatarUrl = typeof data.avatarUrl === "string" ? data.avatarUrl.trim() : "";
+  const packageId = typeof data.packageId === "string" ? data.packageId.trim() : "";
 
-  return { uid, server, name, avatarUrl };
+  return { uid, server, name, avatarUrl, packageId };
 }
 
 module.exports = { normalizeCreateCodePayload, normalizeVerifyPayload, normalizeCheckAccessPayload };

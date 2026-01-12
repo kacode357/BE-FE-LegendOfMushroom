@@ -263,18 +263,19 @@ router.post("/verify", verify);
  *   post:
  *     tags:
  *       - Access
- *     summary: Check user access by uid and server
- *     description: Verify if user has access. Optional name and avatarUrl will be updated if provided.
+ *     summary: Check user access by uid, server and packageId
+ *     description: Verify if user has access to a specific package. Optional name and avatarUrl will be updated if provided.
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [uid, server]
+ *             required: [uid, server, packageId]
  *             properties:
  *               uid: { type: string, example: "user123" }
  *               server: { type: string, example: "S1" }
+ *               packageId: { type: string, example: "65a0c9e9-e8a5-f0f9-b5c2-d11100000001", description: "Package ID to check access for" }
  *               name: { type: string, example: "Nguyễn Văn A", description: "Optional - will update if provided" }
  *               avatarUrl: { type: string, example: "https://example.com/avatar.jpg", description: "Optional - will update if provided" }
  *     responses:
@@ -307,22 +308,29 @@ router.post("/verify", verify);
  *                   data:
  *                     allowed: true
  *                     package:
- *                       id: "1"
+ *                       id: "65a0c9e9-e8a5-f0f9-b5c2-d11100000001"
  *                       name: "Gói Premium"
  *       400:
- *         description: Missing required fields
+ *         description: Missing required fields or invalid packageId
  *         content:
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
  *             examples:
  *               missingFields:
- *                 summary: Thiếu uid hoặc server
+ *                 summary: Thiếu thông tin bắt buộc
  *                 value:
  *                   success: false
  *                   status: 400
- *                   message: "uid and server are required"
+ *                   message: "uid, server and packageId are required"
  *                   code: "ACCESS_MISSING_FIELDS"
+ *               invalidPackageId:
+ *                 summary: PackageId không hợp lệ
+ *                 value:
+ *                   success: false
+ *                   status: 400
+ *                   message: "invalid packageId"
+ *                   code: "ACCESS_INVALID_PACKAGE_ID"
  *       404:
  *         description: No access found
  *         content:
@@ -331,11 +339,11 @@ router.post("/verify", verify);
  *               $ref: "#/components/schemas/ErrorResponse"
  *             examples:
  *               notFound:
- *                 summary: Không tìm thấy quyền truy cập
+ *                 summary: Không tìm thấy quyền truy cập cho gói này
  *                 value:
  *                   success: false
  *                   status: 404
- *                   message: "no access found for this user"
+ *                   message: "no access found for this user with this package"
  *                   code: "ACCESS_NOT_FOUND"
  */
 router.post("/check", checkAccess);

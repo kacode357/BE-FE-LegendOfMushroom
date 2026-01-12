@@ -204,21 +204,30 @@ async function listRegisteredUsers() {
 }
 
 async function checkUserAccess(payload) {
-  const { uid, server, name, avatarUrl } = payload;
+  const { uid, server, name, avatarUrl, packageId } = payload;
 
-  if (!uid || !server) {
+  if (!uid || !server || !packageId) {
     throw new AppError({
       statusCode: 400,
       code: "ACCESS_MISSING_FIELDS",
-      message: "uid and server are required",
+      message: "uid, server and packageId are required",
     });
   }
 
-  // Find access code by uid and server
+  if (!isUuid(packageId)) {
+    throw new AppError({
+      statusCode: 400,
+      code: "ACCESS_INVALID_PACKAGE_ID",
+      message: "invalid packageId",
+    });
+  }
+
+  // Find access code by uid, server and packageId
   const accessCode = await AccessCode.findOne({
     where: {
       userUid: uid,
       userServer: server,
+      packageId: String(packageId),
       usedAt: { [Sequelize.Op.ne]: null },
     },
   });
@@ -227,7 +236,7 @@ async function checkUserAccess(payload) {
     throw new AppError({
       statusCode: 404,
       code: "ACCESS_NOT_FOUND",
-      message: "no access found for this user",
+      message: "no access found for this user with this package",
     });
   }
 
