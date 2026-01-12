@@ -18,14 +18,10 @@ const diagnosticsMode =
 const isSwaggerEnabled =
   String(process.env.SWAGGER_UI_ENABLED || "").toLowerCase() === "true";
 
-const corsOrigins = String(process.env.CORS_ORIGIN || "http://localhost:3000")
-  .split(",")
-  .map((s) => s.trim())
-  .filter(Boolean);
-
+// Allow all origins - no CORS restrictions
 app.use(
   cors({
-    origin: corsOrigins,
+    origin: true,
     credentials: true,
   })
 );
