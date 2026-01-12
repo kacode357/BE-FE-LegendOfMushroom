@@ -5,28 +5,35 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-bold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg",
         destructive:
-          "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-md",
         outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+          "border-2 border-primary bg-background hover:bg-primary hover:text-primary-foreground",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-md",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
+          "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        // Game Theme Variants
+        cta: "bg-gradient-to-r from-[hsl(45,96%,53%)] to-[hsl(35,95%,45%)] text-[hsl(45,90%,15%)] shadow-lg hover:shadow-xl hover:scale-105 active:scale-100 transition-all duration-200",
+        forest: "bg-gradient-to-r from-[hsl(142,69%,58%)] to-[hsl(142,60%,35%)] text-[hsl(142,40%,10%)] shadow-lg hover:shadow-xl hover:scale-105 active:scale-100 transition-all duration-200",
+        glass: "bg-white/70 backdrop-blur-lg text-foreground hover:bg-white/80 border border-white/30",
+        hero: "bg-gradient-to-r from-[hsl(45,96%,53%)] via-[hsl(45,96%,53%)] to-[hsl(35,95%,45%)] text-[hsl(45,90%,15%)] shadow-xl hover:scale-105 active:scale-100 transition-all duration-200 font-extrabold",
+        magic: "bg-gradient-to-r from-[hsl(270,60%,65%)] to-[hsl(330,70%,70%)] text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-100 transition-all duration-200",
       },
       size: {
-        default: "h-9 px-4 py-2 has-[>svg]:px-3",
-        sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
-        lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
-        icon: "size-9",
+        default: "h-10 px-4 py-2",
+        sm: "h-9 rounded-lg px-3",
+        lg: "h-12 rounded-xl px-6 text-base",
+        xl: "h-14 rounded-2xl px-8 text-lg",
+        icon: "size-10",
         "icon-sm": "size-8",
-        "icon-lg": "size-10",
+        "icon-lg": "size-12",
       },
     },
     defaultVariants: {

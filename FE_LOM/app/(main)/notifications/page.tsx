@@ -10,6 +10,7 @@ import {
 import { listPackages } from "@/services/package.service";
 import type { NotificationDto } from "@/types/notification/response/notification.response";
 import type { PackageDto } from "@/types/package/response/package.response";
+import { Bell, RefreshCw, Package, Sparkles, FileText, Send, Check } from "lucide-react";
 
 export default function NotificationsPage() {
   const [packages, setPackages] = useState<PackageDto[]>([]);
@@ -97,51 +98,92 @@ export default function NotificationsPage() {
   }
 
   return (
-    <div className="rounded-2xl border border-foreground/10 bg-background p-6">
+    <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">Quản lý thông báo</h1>
-          <p className="mt-2 text-sm text-foreground/70">
-            Chọn gói để tạo/sửa thông báo. Mỗi gói chỉ có 1 thông báo.
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-xl bg-gradient-gold flex items-center justify-center shadow-lg glow-gold">
+            <Bell className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-extrabold text-foreground">Quản lý thông báo</h1>
+            <p className="text-sm text-muted-foreground">
+              Chọn gói để tạo/sửa thông báo (mỗi gói 1 thông báo)
+            </p>
+          </div>
         </div>
-        <Button variant="outline" className="h-9" onClick={loadPackages} disabled={loading}>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={loadPackages} 
+          disabled={loading}
+          className="hover-jelly"
+        >
+          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           {loading ? "Đang tải..." : "Tải lại"}
         </Button>
       </div>
 
+      {/* Error */}
       {error ? (
-        <div className="mt-4 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-500">
+        <div className="rounded-xl border-2 border-destructive/30 bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive animate-fade-in">
           {error}
         </div>
       ) : null}
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2">
         {/* Left: Package List */}
-        <div>
-          <h2 className="mb-3 text-base font-semibold">Danh sách gói</h2>
+        <div className="rounded-2xl border-2 border-border bg-card p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <Package className="w-5 h-5 text-primary" />
+            <h2 className="text-lg font-bold text-foreground">Danh sách gói</h2>
+            <span className="px-2 py-0.5 rounded-full bg-accent text-xs font-bold">
+              {packages.length}
+            </span>
+          </div>
           
           {loading ? (
-            <div className="text-center text-sm text-foreground/70">Đang tải...</div>
+            <div className="flex items-center justify-center py-12">
+              <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center animate-pulse">
+                <Package className="w-6 h-6 text-muted-foreground" />
+              </div>
+            </div>
           ) : packages.length === 0 ? (
-            <div className="text-center text-sm text-foreground/70">Chưa có gói nào</div>
+            <div className="text-center py-12 text-muted-foreground">
+              <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-accent flex items-center justify-center">
+                <Package className="w-6 h-6" />
+              </div>
+              Chưa có gói nào
+            </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-2 max-h-96 overflow-y-auto pr-2">
               {packages.map((pkg) => (
                 <button
                   key={pkg.id}
                   onClick={() => setSelectedPkg(pkg)}
-                  className={
-                    "w-full rounded-lg border p-3 text-left transition-colors " +
-                    (selectedPkg?.id === pkg.id
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
-                      : "border-foreground/10 hover:bg-foreground/5")
-                  }
+                  className={`
+                    w-full rounded-xl border-2 p-4 text-left transition-all hover-lift
+                    ${selectedPkg?.id === pkg.id
+                      ? "border-primary bg-primary/10 shadow-md"
+                      : "border-border hover:border-primary/50 hover:bg-accent/30"}
+                  `}
                 >
-                  <div className="font-medium">{pkg.name}</div>
-                  {pkg.description && (
-                    <div className="mt-1 text-xs text-foreground/70">{pkg.description}</div>
-                  )}
+                  <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                      selectedPkg?.id === pkg.id ? 'bg-gradient-forest' : 'bg-accent'
+                    }`}>
+                      <Package className={`w-4 h-4 ${selectedPkg?.id === pkg.id ? 'text-white' : 'text-muted-foreground'}`} />
+                    </div>
+                    <div>
+                      <div className="font-bold text-foreground">{pkg.name}</div>
+                      {pkg.description && (
+                        <div className="mt-1 text-xs text-muted-foreground line-clamp-1">{pkg.description}</div>
+                      )}
+                    </div>
+                    {selectedPkg?.id === pkg.id && (
+                      <Check className="w-5 h-5 text-primary ml-auto" />
+                    )}
+                  </div>
                 </button>
               ))}
             </div>
@@ -149,73 +191,109 @@ export default function NotificationsPage() {
         </div>
 
         {/* Right: Notification Form */}
-        <div>
+        <div className="rounded-2xl border-2 border-border bg-card p-5">
           {!selectedPkg ? (
-            <div className="flex h-64 items-center justify-center rounded-lg border border-foreground/10 bg-foreground/5 text-sm text-foreground/70">
-              Chọn một gói để quản lý thông báo
+            <div className="flex flex-col items-center justify-center h-80 text-muted-foreground">
+              <div className="w-16 h-16 rounded-full bg-accent flex items-center justify-center mb-4">
+                <Bell className="w-8 h-8" />
+              </div>
+              <p className="text-sm font-medium">Chọn một gói để quản lý thông báo</p>
             </div>
           ) : (
             <div>
-              <h2 className="mb-3 text-base font-semibold">
-                Thông báo: {selectedPkg.name}
-              </h2>
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles className="w-5 h-5 text-gold" />
+                <h2 className="text-lg font-bold text-foreground">
+                  Thông báo: {selectedPkg.name}
+                </h2>
+              </div>
 
               {notifLoading ? (
-                <div className="text-center text-sm text-foreground/70">Đang tải...</div>
+                <div className="flex items-center justify-center py-12">
+                  <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center animate-pulse">
+                    <Bell className="w-6 h-6 text-muted-foreground" />
+                  </div>
+                </div>
               ) : (
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium">Tiêu đề</label>
+                    <label className="text-sm font-semibold text-foreground flex items-center gap-2 mb-2">
+                      <FileText className="w-4 h-4 text-muted-foreground" />
+                      Tiêu đề
+                    </label>
                     <input
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className="mt-1.5 h-10 w-full rounded-lg border border-foreground/15 bg-background px-3 text-sm outline-none focus:border-foreground/30"
+                      className="h-11 w-full rounded-xl border-2 border-border bg-background px-4 text-sm font-medium outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted-foreground"
                       placeholder="VD: Thông báo quan trọng"
                     />
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium">
-                      Nội dung{" "}
-                      <span className="text-foreground/50">(mỗi câu kết thúc bằng dấu chấm)</span>
+                    <label className="text-sm font-semibold text-foreground flex items-center gap-2 mb-2">
+                      <FileText className="w-4 h-4 text-muted-foreground" />
+                      Nội dung
+                      <span className="text-xs text-muted-foreground font-normal">(mỗi câu kết thúc bằng dấu chấm)</span>
                     </label>
                     <textarea
                       value={content}
                       onChange={(e) => setContent(e.target.value)}
-                      rows={6}
-                      className="mt-1.5 w-full rounded-lg border border-foreground/15 bg-background px-3 py-2 text-sm outline-none focus:border-foreground/30"
+                      rows={5}
+                      className="w-full rounded-xl border-2 border-border bg-background px-4 py-3 text-sm font-medium outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted-foreground resize-none"
                       placeholder="VD: Câu đầu tiên. Câu thứ hai. Câu thứ ba."
                     />
-                    <p className="mt-1 text-xs text-foreground/50">
-                      Mỗi câu kết thúc bằng dấu chấm sẽ được hiển thị trên 1 dòng riêng
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Mỗi câu kết thúc bằng dấu chấm sẽ hiển thị trên 1 dòng riêng
                     </p>
                   </div>
 
                   {/* Preview */}
                   {content && (
-                    <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-4">
-                      <p className="mb-2 text-xs font-medium text-foreground/70">Xem trước:</p>
-                      <ul className="space-y-1.5 text-sm">
+                    <div className="rounded-xl border-2 border-accent bg-accent/30 p-4">
+                      <p className="mb-3 text-xs font-bold text-foreground flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-gold" />
+                        Xem trước:
+                      </p>
+                      <ul className="space-y-2 text-sm">
                         {content
                           .split(".")
                           .map(line => line.trim())
                           .filter(line => line.length > 0)
                           .map((line, idx) => (
-                            <li key={idx} className="flex gap-2">
-                              <span className="text-foreground/50">•</span>
-                              <span>{line}</span>
+                            <li key={idx} className="flex gap-2 items-start">
+                              <span className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                              </span>
+                              <span className="text-foreground">{line}</span>
                             </li>
                           ))}
                       </ul>
                     </div>
                   )}
 
-                  <div className="flex gap-3">
-                    <Button onClick={onSave} disabled={!canSubmit} className="flex-1">
-                      {submitting ? "Đang lưu..." : notification ? "Cập nhật" : "Tạo thông báo"}
+                  <div className="flex gap-3 pt-2">
+                    <Button 
+                      onClick={onSave} 
+                      disabled={!canSubmit} 
+                      variant="forest"
+                      size="lg"
+                      className="flex-1 hover-jelly"
+                    >
+                      {submitting ? (
+                        <>
+                          <span className="animate-spin">⏳</span>
+                          Đang lưu...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-5 h-5" />
+                          {notification ? "Cập nhật" : "Tạo thông báo"}
+                        </>
+                      )}
                     </Button>
                     <Button
                       variant="outline"
+                      size="lg"
                       onClick={() => setSelectedPkg(null)}
                       disabled={submitting}
                     >

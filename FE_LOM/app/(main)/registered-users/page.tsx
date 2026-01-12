@@ -4,6 +4,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useRegisteredUsers } from "@/hooks/access/useRegisteredUsers";
+import { Users, RefreshCw, User, Server, Package, Clock, KeyRound } from "lucide-react";
 
 function formatDateTime(value: string) {
   const date = new Date(value);
@@ -15,71 +16,142 @@ export default function RegisteredUsersPage() {
   const { items, loading, error, refresh } = useRegisteredUsers();
 
   return (
-    <div className="rounded-2xl border border-foreground/10 bg-background p-6">
+    <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">User đã đăng ký</h1>
-          <p className="mt-2 text-sm text-foreground/70">
-            Danh sách các code đã được bind (admin-only).
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-xl bg-gradient-magic flex items-center justify-center shadow-lg glow-magic">
+            <Users className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-extrabold text-foreground">User đã đăng ký</h1>
+            <p className="text-sm text-muted-foreground">
+              Danh sách các code đã được bind
+            </p>
+          </div>
         </div>
-        <Button variant="outline" className="h-9" onClick={refresh} disabled={loading}>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={refresh} 
+          disabled={loading}
+          className="hover-jelly"
+        >
+          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           {loading ? "Đang tải..." : "Tải lại"}
         </Button>
       </div>
 
+      {/* Stats */}
+      <div className="flex gap-4">
+        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent/50 border border-accent">
+          <Users className="w-4 h-4 text-primary" />
+          <span className="text-sm font-semibold">{items.length} users</span>
+        </div>
+      </div>
+
+      {/* Error */}
       {error ? (
-        <div className="mt-4 rounded-xl border border-foreground/15 bg-foreground/5 px-3 py-2 text-sm">
+        <div className="rounded-xl border-2 border-destructive/30 bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive animate-fade-in">
           {error}
         </div>
       ) : null}
 
-      <div className="mt-4 overflow-x-auto rounded-xl border border-foreground/10">
-        <table className="w-full min-w-180 text-left text-sm">
-          <thead className="border-b border-foreground/10 bg-foreground/5">
-            <tr>
-              <th className="px-3 py-2 font-medium">Avatar</th>
-              <th className="px-3 py-2 font-medium">Name</th>
-              <th className="px-3 py-2 font-medium">UID</th>
-              <th className="px-3 py-2 font-medium">Server</th>
-              <th className="px-3 py-2 font-medium">Gói</th>
-              <th className="px-3 py-2 font-medium">Code</th>
-              <th className="px-3 py-2 font-medium">Used at</th>
-              <th className="px-3 py-2 font-medium">Last access</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.length === 0 ? (
+      {/* Table */}
+      <div className="rounded-2xl border-2 border-border bg-card overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[900px] text-left text-sm">
+            <thead className="border-b-2 border-border bg-accent/30">
               <tr>
-                <td className="px-3 py-4 text-foreground/70" colSpan={8}>
-                  {loading ? "Đang tải..." : "Chưa có user nào đăng ký."}
-                </td>
+                <th className="px-4 py-3 font-bold text-foreground">
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-primary" />
+                    Avatar
+                  </div>
+                </th>
+                <th className="px-4 py-3 font-bold text-foreground">Name</th>
+                <th className="px-4 py-3 font-bold text-foreground">UID</th>
+                <th className="px-4 py-3 font-bold text-foreground">
+                  <div className="flex items-center gap-2">
+                    <Server className="w-4 h-4 text-muted-foreground" />
+                    Server
+                  </div>
+                </th>
+                <th className="px-4 py-3 font-bold text-foreground">
+                  <div className="flex items-center gap-2">
+                    <Package className="w-4 h-4 text-gold" />
+                    Gói
+                  </div>
+                </th>
+                <th className="px-4 py-3 font-bold text-foreground">
+                  <div className="flex items-center gap-2">
+                    <KeyRound className="w-4 h-4 text-muted-foreground" />
+                    Code
+                  </div>
+                </th>
+                <th className="px-4 py-3 font-bold text-foreground">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-muted-foreground" />
+                    Used at
+                  </div>
+                </th>
+                <th className="px-4 py-3 font-bold text-foreground">Last access</th>
               </tr>
-            ) : (
-              items.map((item) => (
-                <tr key={item.code} className="border-b border-foreground/10 last:border-b-0">
-                  <td className="px-3 py-2">
-                    <img
-                      src={item.user?.avatarUrl}
-                      alt={item.user?.name}
-                      className="h-9 w-9 rounded-full border border-foreground/10 object-cover"
-                      referrerPolicy="no-referrer"
-                    />
-                  </td>
-                  <td className="px-3 py-2 font-medium">{item.user?.name}</td>
-                  <td className="px-3 py-2">{item.user?.uid}</td>
-                  <td className="px-3 py-2">{item.user?.server}</td>
-                  <td className="px-3 py-2">{item.package?.name ?? "-"}</td>
-                  <td className="px-3 py-2 font-mono">{item.code}</td>
-                  <td className="px-3 py-2 text-foreground/70">{formatDateTime(item.usedAt)}</td>
-                  <td className="px-3 py-2 text-foreground/70">
-                    {item.lastAccessAt ? formatDateTime(item.lastAccessAt) : "-"}
+            </thead>
+            <tbody>
+              {items.length === 0 ? (
+                <tr>
+                  <td className="px-4 py-12 text-center text-muted-foreground" colSpan={8}>
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="w-16 h-16 rounded-full bg-accent flex items-center justify-center">
+                        <Users className="w-8 h-8 text-muted-foreground" />
+                      </div>
+                      <span>{loading ? "Đang tải..." : "Chưa có user nào đăng ký."}</span>
+                    </div>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                items.map((item, index) => (
+                  <tr 
+                    key={item.code} 
+                    className={`border-b border-border last:border-b-0 transition-colors hover:bg-accent/30 ${
+                      index % 2 === 0 ? 'bg-background' : 'bg-accent/10'
+                    }`}
+                  >
+                    <td className="px-4 py-3">
+                      <div className="relative">
+                        <img
+                          src={item.user?.avatarUrl}
+                          alt={item.user?.name}
+                          className="h-10 w-10 rounded-full border-2 border-primary/30 object-cover shadow-md"
+                          referrerPolicy="no-referrer"
+                        />
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-primary border-2 border-card" />
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 font-bold text-foreground">{item.user?.name}</td>
+                    <td className="px-4 py-3 font-mono text-sm text-muted-foreground">{item.user?.uid}</td>
+                    <td className="px-4 py-3">
+                      <span className="px-2 py-1 rounded-lg bg-accent text-xs font-semibold">
+                        {item.user?.server}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="px-2 py-1 rounded-lg bg-gradient-gold text-xs font-bold text-yellow-900">
+                        {item.package?.name ?? "-"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 font-mono text-sm">{item.code}</td>
+                    <td className="px-4 py-3 text-sm text-muted-foreground">{formatDateTime(item.usedAt)}</td>
+                    <td className="px-4 py-3 text-sm text-muted-foreground">
+                      {item.lastAccessAt ? formatDateTime(item.lastAccessAt) : "-"}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

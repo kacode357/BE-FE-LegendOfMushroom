@@ -13,8 +13,8 @@ type UseLoginFormOptions = {
 
 export function useLoginForm(options: UseLoginFormOptions = {}) {
   const router = useRouter();
-  const [email, setEmail] = useState(options.initialEmail ?? "admin@local");
-  const [password, setPassword] = useState(options.initialPassword ?? "123123");
+  const [email, setEmail] = useState(options.initialEmail ?? "");
+  const [password, setPassword] = useState(options.initialPassword ?? "");
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
