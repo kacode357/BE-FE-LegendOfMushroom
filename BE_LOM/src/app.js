@@ -88,22 +88,62 @@ if (!diagnosticsMode) {
   );
 }
 if (isSwaggerEnabled) {
+  // Serve custom JS to force light mode BEFORE swagger UI
+  app.get('/swagger-custom.js', (req, res) => {
+    res.type('application/javascript');
+    res.send(`
+      (function() {
+        // Clear dark mode from localStorage
+        localStorage.removeItem('theme');
+        localStorage.removeItem('swagger-ui-theme');
+        localStorage.setItem('theme', 'light');
+        
+        // Wait for Swagger UI to load and force light mode
+        const forceLight = setInterval(function() {
+          const html = document.documentElement;
+          const body = document.body;
+          
+          if (html && html.getAttribute('data-theme') === 'dark') {
+            html.removeAttribute('data-theme');
+            html.setAttribute('data-theme', 'light');
+          }
+          if (body && body.getAttribute('data-theme') === 'dark') {
+            body.removeAttribute('data-theme');
+            body.setAttribute('data-theme', 'light');
+          }
+          
+          // Find and click dark mode toggle if still in dark mode
+          const toggleButtons = document.querySelectorAll('button');
+          for (let btn of toggleButtons) {
+            const title = btn.getAttribute('title') || '';
+            if (title.toLowerCase().includes('dark') && html.getAttribute('data-theme') === 'dark') {
+              btn.click();
+              clearInterval(forceLight);
+              break;
+            }
+          }
+        }, 100);
+        
+        // Stop checking after 5 seconds
+        setTimeout(() => clearInterval(forceLight), 5000);
+      })();
+    `);
+  });
+  
   app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
     customSiteTitle: "LOM API Docs",
     customCss: `
-      .swagger-ui { background: #fff !important; }
-      .swagger-ui .scheme-container { background: #fff !important; }
-      .swagger-ui .topbar { background: #89bf04 !important; }
-      .swagger-ui .btn { background: transparent !important; }
-      .swagger-ui .opblock .opblock-summary { background: rgba(0,0,0,.05) !important; }
-      .swagger-ui .opblock.opblock-post { border-color: #49cc90 !important; background: rgba(73,204,144,.1) !important; }
-      .swagger-ui .opblock.opblock-get { border-color: #61affe !important; background: rgba(97,175,254,.1) !important; }
-      .swagger-ui .opblock.opblock-put { border-color: #fca130 !important; background: rgba(252,161,48,.1) !important; }
-      .swagger-ui .opblock.opblock-delete { border-color: #f93e3e !important; background: rgba(249,62,62,.1) !important; }
       /* Hide dark mode toggle button */
       .swagger-ui .dark-mode-toggle { display: none !important; }
       button[title*="dark mode"] { display: none !important; }
       button[title*="Dark mode"] { display: none !important; }
+    `,
+    customJsStr: `
+      localStorage.removeItem('theme');
+      localStorage.setItem('theme', 'light');
+      if (document.documentElement.getAttribute('data-theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
     `,
   }));
 } else {
