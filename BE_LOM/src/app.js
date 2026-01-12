@@ -89,7 +89,7 @@ if (!diagnosticsMode) {
 }
 if (isSwaggerEnabled) {
   app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-    customSiteTitle: "CrawlData FPT API Docs",
+    customSiteTitle: "LOM API Docs",
     customCss: `
       .swagger-ui { background: #fff !important; }
       .swagger-ui .scheme-container { background: #fff !important; }

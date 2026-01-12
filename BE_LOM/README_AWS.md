@@ -34,8 +34,8 @@ Optional:
 ### Option A: ECS / EC2 / any Docker host
 
 Build & run:
-- `docker build -t crawldata-be .`
-- `docker run -p 3000:3000 --env-file .env crawldata-be`
+- `docker build -t lom-be .`
+- `docker run -p 3000:3000 --env-file .env lom-be`
 
 Health check endpoint:
 - `GET /health`

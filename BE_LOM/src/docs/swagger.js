@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 8080;
 const definition = {
   openapi: "3.0.3",
   info: {
-    title: "CrawlData FPT API",
+    title: "LOM API",
     version: "1.0.0",
   },
   servers: [

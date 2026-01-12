@@ -4,7 +4,7 @@ This backend uses PostgreSQL via Sequelize.
 
 ## 1) Create a Web Service
 
-- Root Directory: `BE_CrawlData_FPT`
+- Root Directory: `BE_LOM`
 - Build Command: `npm install`
 - Start Command: `node src/server.js`
 
