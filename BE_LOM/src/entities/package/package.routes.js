@@ -35,6 +35,23 @@ const router = express.Router();
  *                           name: { type: string }
  *                           description: { type: string }
  *                           fileUrl: { type: string }
+ *             examples:
+ *               success:
+ *                 summary: Danh sách gói thành công
+ *                 value:
+ *                   success: true
+ *                   status: 200
+ *                   message: "ok"
+ *                   data:
+ *                     items:
+ *                       - id: "1"
+ *                         name: "Gói Premium"
+ *                         description: "Gói cao cấp với nhiều tính năng"
+ *                         fileUrl: "https://example.com/premium.zip"
+ *                       - id: "2"
+ *                         name: "Gói Basic"
+ *                         description: "Gói cơ bản"
+ *                         fileUrl: "https://example.com/basic.zip"
  */
 router.get("/", list);
 
