@@ -37,11 +37,10 @@ export function useLoginForm(options: UseLoginFormOptions = {}) {
 
       try {
         await login(email, password);
-        setSuccess("Đăng nhập thành công.");
+        // Redirect immediately without showing success message
         router.push("/");
       } catch (err: unknown) {
         setError(getApiErrorMessage(err));
-      } finally {
         setSubmitting(false);
       }
     },

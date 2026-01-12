@@ -31,10 +31,11 @@ async function login(req, res, next) {
 
     // Store encrypted auth data in HttpOnly cookie so client JS cannot read it.
     const encrypted = encryptJson(data);
+    const isProduction = process.env.NODE_ENV === "production";
     res.cookie(AUTH_COOKIE_NAME, encrypted, {
       httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: isProduction ? "none" : "lax",
+      secure: isProduction,
       path: "/",
       maxAge: 1000 * 60 * 60 * 24, // 1 day
     });
@@ -52,10 +53,11 @@ async function login(req, res, next) {
 
 // Logout controller: stateless JWT, client clears token.
 function logout(req, res) {
+  const isProduction = process.env.NODE_ENV === "production";
   res.clearCookie(AUTH_COOKIE_NAME, {
     httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    sameSite: isProduction ? "none" : "lax",
+    secure: isProduction,
     path: "/",
   });
 
