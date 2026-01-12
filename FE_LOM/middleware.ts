@@ -2,19 +2,30 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  
+  // Skip middleware for API routes, static files, and Next.js internals
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.includes('.')
+  ) {
+    return NextResponse.next();
+  }
+  
   // Get auth flag cookie from frontend domain (not backend's __a~ cookie)
   const authFlag = request.cookies.get('auth');
   
-  // Protected routes (everything except auth routes)
-  const isProtectedRoute = !request.nextUrl.pathname.startsWith('/login');
+  // Auth routes that don't require authentication
+  const isAuthRoute = pathname.startsWith('/login');
   
   // If trying to access protected route without auth flag, redirect to login
-  if (isProtectedRoute && !authFlag) {
+  if (!isAuthRoute && !authFlag) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
   
   // If already logged in and trying to access login page, redirect to home
-  if (request.nextUrl.pathname === '/login' && authFlag) {
+  if (isAuthRoute && authFlag) {
     return NextResponse.redirect(new URL('/', request.url));
   }
   
