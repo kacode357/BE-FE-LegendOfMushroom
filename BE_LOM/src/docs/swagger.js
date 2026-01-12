@@ -2,6 +2,7 @@ const path = require("path");
 const swaggerJSDoc = require("swagger-jsdoc");
 
 const PORT = process.env.PORT || 8080;
+const BASE_URL = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
 
 const definition = {
   openapi: "3.0.3",
@@ -11,7 +12,7 @@ const definition = {
   },
   servers: [
     {
-      url: `http://localhost:${PORT}`,
+      url: BASE_URL,
     },
   ],
   tags: [{ name: "Health" }, { name: "Auth" }, { name: "Access" }, { name: "Packages" }],
