@@ -18,6 +18,8 @@ export function useLogout() {
 
     try {
       await logout();
+      // Clear auth flag cookie on frontend domain
+      document.cookie = "auth=; path=/; max-age=0";
       ok = true;
     } catch (err: unknown) {
       setError(getApiErrorMessage(err));

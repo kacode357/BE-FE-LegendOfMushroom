@@ -2,19 +2,19 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  // Get auth cookie
-  const authCookie = request.cookies.get('__a~');
+  // Get auth flag cookie from frontend domain (not backend's __a~ cookie)
+  const authFlag = request.cookies.get('auth');
   
   // Protected routes (everything except auth routes)
   const isProtectedRoute = !request.nextUrl.pathname.startsWith('/login');
   
-  // If trying to access protected route without auth cookie, redirect to login
-  if (isProtectedRoute && !authCookie) {
+  // If trying to access protected route without auth flag, redirect to login
+  if (isProtectedRoute && !authFlag) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
   
   // If already logged in and trying to access login page, redirect to home
-  if (request.nextUrl.pathname === '/login' && authCookie) {
+  if (request.nextUrl.pathname === '/login' && authFlag) {
     return NextResponse.redirect(new URL('/', request.url));
   }
   

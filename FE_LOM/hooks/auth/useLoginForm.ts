@@ -37,6 +37,8 @@ export function useLoginForm(options: UseLoginFormOptions = {}) {
 
       try {
         await login(email, password);
+        // Set a flag cookie on frontend domain so middleware can detect login
+        document.cookie = "auth=1; path=/; max-age=86400; SameSite=Lax";
         // Redirect immediately without showing success message
         router.push("/");
       } catch (err: unknown) {
