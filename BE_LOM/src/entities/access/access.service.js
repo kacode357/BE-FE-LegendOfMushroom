@@ -70,11 +70,11 @@ async function createAccessCode({ ttlMinutes, createdBy }) {
 async function verifyOrRegisterAccess(payload) {
   const { code, name, uid, server, avatarUrl, packageId } = payload;
 
-  if (!code || !name || !uid || !server || !avatarUrl || !packageId) {
+  if (!code || !name || !uid || !server || !packageId) {
     throw new AppError({
       statusCode: 400,
       code: "ACCESS_MISSING_FIELDS",
-      message: "code, name, uid, server, avatarUrl, packageId are required",
+      message: "code, name, uid, server, packageId are required",
     });
   }
 
@@ -127,7 +127,7 @@ async function verifyOrRegisterAccess(payload) {
       userUid: incomingUser.uid,
       userName: incomingUser.name,
       userServer: incomingUser.server,
-      userAvatarUrl: incomingUser.avatarUrl,
+      userAvatarUrl: incomingUser.avatarUrl || null,
       packageId: String(pkg.id),
       packageName: pkg.name,
       // Prevent cleanup deletion after the code is claimed.
@@ -203,4 +203,50 @@ async function listRegisteredUsers() {
   }));
 }
 
-module.exports = { createAccessCode, verifyOrRegisterAccess, listRegisteredUsers };
+async function checkUserAccess(payload) {
+  const { uid, server, name, avatarUrl } = payload;
+
+  if (!uid || !server) {
+    throw new AppError({
+      statusCode: 400,
+      code: "ACCESS_MISSING_FIELDS",
+      message: "uid and server are required",
+    });
+  }
+
+  // Find access code by uid and server
+  const accessCode = await AccessCode.findOne({
+    where: {
+      userUid: uid,
+      userServer: server,
+      usedAt: { [Sequelize.Op.ne]: null },
+    },
+  });
+
+  if (!accessCode) {
+    throw new AppError({
+      statusCode: 404,
+      code: "ACCESS_NOT_FOUND",
+      message: "no access found for this user",
+    });
+  }
+
+  // Update name and avatar if provided
+  const updates = { lastAccessAt: new Date() };
+  if (name) updates.userName = name;
+  if (avatarUrl) updates.userAvatarUrl = avatarUrl;
+  
+  await accessCode.update(updates);
+
+  return {
+    ok: true,
+    allowed: true,
+    message: "access granted",
+    package: {
+      id: accessCode.packageId ? String(accessCode.packageId) : null,
+      name: accessCode.packageName || null,
+    },
+  };
+}
+
+module.exports = { createAccessCode, verifyOrRegisterAccess, listRegisteredUsers, checkUserAccess };

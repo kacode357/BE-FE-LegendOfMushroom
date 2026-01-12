@@ -24,4 +24,15 @@ function normalizeVerifyPayload(payload) {
   return { code, name, uid, server, avatarUrl, packageId };
 }
 
-module.exports = { normalizeCreateCodePayload, normalizeVerifyPayload };
+function normalizeCheckAccessPayload(payload) {
+  const data = payload || {};
+
+  const uid = typeof data.uid === "string" ? data.uid.trim() : "";
+  const server = typeof data.server === "string" ? data.server.trim() : "";
+  const name = typeof data.name === "string" ? data.name.trim() : "";
+  const avatarUrl = typeof data.avatarUrl === "string" ? data.avatarUrl.trim() : "";
+
+  return { uid, server, name, avatarUrl };
+}
+
+module.exports = { normalizeCreateCodePayload, normalizeVerifyPayload, normalizeCheckAccessPayload };

@@ -1,5 +1,5 @@
 const express = require("express");
-const { createCode, verify, getUsers } = require("./access.controller");
+const { createCode, verify, checkAccess, getUsers } = require("./access.controller");
 const { authenticateAny } = require("../../middleware/authAny");
 const { authorizeRoles } = require("../../middleware/auth");
 
@@ -256,5 +256,88 @@ router.get("/users", authenticateAny, authorizeRoles("admin"), getUsers);
  *                   code: "CODE_EXPIRED"
  */
 router.post("/verify", verify);
+
+/**
+ * @openapi
+ * /api/access/check:
+ *   post:
+ *     tags:
+ *       - Access
+ *     summary: Check user access by uid and server
+ *     description: Verify if user has access. Optional name and avatarUrl will be updated if provided.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [uid, server]
+ *             properties:
+ *               uid: { type: string, example: "user123" }
+ *               server: { type: string, example: "S1" }
+ *               name: { type: string, example: "Nguyễn Văn A", description: "Optional - will update if provided" }
+ *               avatarUrl: { type: string, example: "https://example.com/avatar.jpg", description: "Optional - will update if provided" }
+ *     responses:
+ *       200:
+ *         description: Access granted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 status: { type: number, example: 200 }
+ *                 message: { type: string }
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     allowed: { type: boolean, example: true }
+ *                     package:
+ *                       type: object
+ *                       properties:
+ *                         id: { type: string }
+ *                         name: { type: string }
+ *             examples:
+ *               success:
+ *                 summary: Có quyền truy cập
+ *                 value:
+ *                   success: true
+ *                   status: 200
+ *                   message: "access granted"
+ *                   data:
+ *                     allowed: true
+ *                     package:
+ *                       id: "1"
+ *                       name: "Gói Premium"
+ *       400:
+ *         description: Missing required fields
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *             examples:
+ *               missingFields:
+ *                 summary: Thiếu uid hoặc server
+ *                 value:
+ *                   success: false
+ *                   status: 400
+ *                   message: "uid and server are required"
+ *                   code: "ACCESS_MISSING_FIELDS"
+ *       404:
+ *         description: No access found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *             examples:
+ *               notFound:
+ *                 summary: Không tìm thấy quyền truy cập
+ *                 value:
+ *                   success: false
+ *                   status: 404
+ *                   message: "no access found for this user"
+ *                   code: "ACCESS_NOT_FOUND"
+ */
+router.post("/check", checkAccess);
 
 module.exports = router;

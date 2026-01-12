@@ -1,6 +1,6 @@
 const { sendSuccess } = require("../../utils/response");
-const { normalizeCreateCodePayload, normalizeVerifyPayload } = require("./access.payload");
-const { createAccessCode, verifyOrRegisterAccess, listRegisteredUsers } = require("./access.service");
+const { normalizeCreateCodePayload, normalizeVerifyPayload, normalizeCheckAccessPayload } = require("./access.payload");
+const { createAccessCode, verifyOrRegisterAccess, listRegisteredUsers, checkUserAccess } = require("./access.service");
 
 async function createCode(req, res, next) {
   try {
@@ -30,6 +30,22 @@ async function verify(req, res, next) {
   }
 }
 
+async function checkAccess(req, res, next) {
+  try {
+    const payload = normalizeCheckAccessPayload(req.body);
+    const result = await checkUserAccess(payload);
+    return sendSuccess(res, {
+      message: result.message,
+      data: {
+        allowed: result.allowed,
+        package: result.package,
+      },
+    });
+  } catch (err) {
+    return next(err);
+  }
+}
+
 async function getUsers(_req, res, next) {
   try {
     const items = await listRegisteredUsers();
@@ -42,4 +58,4 @@ async function getUsers(_req, res, next) {
   }
 }
 
-module.exports = { createCode, verify, getUsers };
+module.exports = { createCode, verify, checkAccess, getUsers };
