@@ -1,0 +1,5 @@
+# Root ignore (prevents secrets from being committed)
+rootkey.csv
+**/.env
+**/.env.*
+node_modules

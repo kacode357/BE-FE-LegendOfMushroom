@@ -1,0 +1,8 @@
+NOTE RULES (for maintainability)
+
+1) Note only when it helps: do not comment every line.
+2) Always add a short header note at the top of each module to describe purpose.
+3) Add a short note above exported functions or non-obvious logic blocks.
+4) Keep notes concise (1 line when possible) and factual (what/why).
+5) Avoid repeating the code (no "sets X to Y" notes).
+6) Prefer English for consistency; keep ASCII only.
