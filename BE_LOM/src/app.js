@@ -75,11 +75,19 @@ if (!diagnosticsMode) {
   const accessRoutes = require("./entities/access/access.routes");
   const packageRoutes = require("./entities/package/package.routes");
   const notificationRoutes = require("./entities/notification/notification.routes");
+  const contactRoutes = require("./entities/contact/contact.routes");
+  const memberRoutes = require("./entities/member/member.routes");
+  const dashboardRoutes = require("./entities/dashboard/dashboard.routes");
+  const userRoutes = require("./entities/user/user.routes");
 
   app.use("/api/auth", authRoutes);
   app.use("/api/access", accessRoutes);
   app.use("/api/packages", packageRoutes);
   app.use("/api/notifications", notificationRoutes);
+  app.use("/api/contacts", contactRoutes);
+  app.use("/api/members", memberRoutes);
+  app.use("/api/dashboard", dashboardRoutes);
+  app.use("/api/users", userRoutes);
 } else {
   console.warn(
     "Diagnostics mode enabled (ALLOW_START_WITHOUT_DB=true): skipping /api routes that require DB"

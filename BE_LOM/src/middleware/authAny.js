@@ -84,4 +84,25 @@ function authenticateAny(req, _res, next) {
   }
 }
 
-module.exports = { authenticateAny };
+function authorizeRoles(...roles) {
+  return (req, _res, next) => {
+    if (!roles.length) {
+      return next();
+    }
+
+    const role = req.auth?.role;
+    if (!role || !roles.includes(role)) {
+      return next(
+        new AppError({
+          statusCode: 403,
+          code: "AUTH_FORBIDDEN",
+          message: "forbidden",
+        })
+      );
+    }
+
+    return next();
+  };
+}
+
+module.exports = { authenticateAny, authorizeRoles };

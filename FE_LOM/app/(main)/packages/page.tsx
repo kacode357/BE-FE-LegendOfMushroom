@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { usePackages } from "@/hooks/package/usePackages";
-import { Package, Plus, RefreshCw, Sparkles, Edit3, Trash2, Link, FileText } from "lucide-react";
+import { Package, Plus, RefreshCw, Sparkles, Edit3, Trash2, Link, FileText, Eye, Check, X, Copy, CheckCheck } from "lucide-react";
 
 type EditState = {
   id: string;
@@ -12,6 +12,39 @@ type EditState = {
   description: string;
   fileUrl: string;
 };
+
+// Preview Card Component
+function PackagePreviewCard({ name, description, gradient = "from-blue-500 via-blue-400 to-cyan-500" }: {
+  name: string;
+  description: string;
+  gradient?: string;
+}) {
+  const features = description ? description.split(',').map(f => f.trim()).filter(f => f.length > 0) : [];
+  
+  return (
+    <div className="rounded-xl border-2 border-border bg-card/50 p-4 h-full">
+      <div className={`w-full h-1.5 rounded-full bg-gradient-to-r ${gradient} mb-3`} />
+      <h4 className="font-bold text-foreground text-sm mb-1 line-clamp-1">{name || "Tên gói"}</h4>
+      <p className={`text-xs font-semibold bg-gradient-to-r ${gradient} bg-clip-text text-transparent mb-2`}>
+        Miễn Phí
+      </p>
+      {features.length > 0 ? (
+        <ul className="space-y-1.5">
+          {features.map((feature, idx) => (
+            <li key={idx} className="flex items-start gap-1.5 text-xs text-muted-foreground">
+              <Check className="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+              <span className="line-clamp-1">{feature}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-xs text-muted-foreground italic">
+          Dùng dấu phẩy (,) để tách các tính năng
+        </p>
+      )}
+    </div>
+  );
+}
 
 export default function PackagesPage() {
   const { items, loading, error, refresh, create, patch, remove } = usePackages();
@@ -23,6 +56,13 @@ export default function PackagesPage() {
 
   const [edit, setEdit] = useState<EditState | null>(null);
   const [cardSubmitting, setCardSubmitting] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  async function handleCopyId(id: string) {
+    await navigator.clipboard.writeText(id);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  }
 
   const canCreate = useMemo(() => name.trim().length > 0 && !submitting, [name, submitting]);
 
@@ -98,67 +138,83 @@ export default function PackagesPage() {
           <h2 className="text-lg font-bold text-foreground">Tạo gói mới</h2>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div>
-            <label className="text-sm font-semibold text-foreground flex items-center gap-1">
-              <Package className="w-4 h-4 text-primary" />
-              Tên gói <span className="text-destructive">*</span>
-            </label>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="mt-2 h-11 w-full rounded-xl border-2 border-border bg-background px-4 text-sm font-medium outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted-foreground"
-              placeholder="VD: Gói Premium"
-            />
+        <div className="grid gap-6 xl:grid-cols-[1fr,280px]">
+          {/* Form Fields */}
+          <div className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="text-sm font-semibold text-foreground flex items-center gap-1">
+                  <Package className="w-4 h-4 text-primary" />
+                  Tên gói <span className="text-destructive">*</span>
+                </label>
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="mt-2 h-11 w-full rounded-xl border-2 border-border bg-background px-4 text-sm font-medium outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted-foreground"
+                  placeholder="VD: Gói 1 - Bỏ Qua Quảng Cáo"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-semibold text-foreground flex items-center gap-1">
+                  <Link className="w-4 h-4 text-muted-foreground" />
+                  File URL
+                </label>
+                <input
+                  value={fileUrl}
+                  onChange={(e) => setFileUrl(e.target.value)}
+                  className="mt-2 h-11 w-full rounded-xl border-2 border-border bg-background px-4 text-sm font-medium outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted-foreground"
+                  placeholder="https://..."
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold text-foreground flex items-center gap-1">
+                <FileText className="w-4 h-4 text-muted-foreground" />
+                Mô tả / Tính năng
+                <span className="text-xs text-muted-foreground ml-2">(dùng dấu phẩy để tách)</span>
+              </label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={3}
+                className="mt-2 w-full rounded-xl border-2 border-border bg-background px-4 py-3 text-sm font-medium outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted-foreground resize-none"
+                placeholder="VD: Bỏ qua ngay quảng cáo,Không cần xem quảng cáo,Tiết kiệm thời gian"
+              />
+            </div>
+
+            <Button 
+              onClick={onCreate} 
+              disabled={!canCreate} 
+              variant="forest"
+              size="lg"
+              className="hover-jelly"
+            >
+              {submitting ? (
+                <>
+                  <span className="animate-spin">⏳</span>
+                  Đang tạo...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-5 h-5" />
+                  Tạo gói
+                </>
+              )}
+            </Button>
           </div>
 
-          <div>
-            <label className="text-sm font-semibold text-foreground flex items-center gap-1">
-              <FileText className="w-4 h-4 text-muted-foreground" />
-              Mô tả
+          {/* Preview */}
+          <div className="xl:sticky xl:top-4">
+            <label className="text-sm font-semibold text-foreground flex items-center gap-1 mb-2">
+              <Eye className="w-4 h-4 text-primary" />
+              Xem trước
             </label>
-            <input
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="mt-2 h-11 w-full rounded-xl border-2 border-border bg-background px-4 text-sm font-medium outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted-foreground"
-              placeholder="Mô tả ngắn gọn"
-            />
+            <div className="min-w-[240px]">
+              <PackagePreviewCard name={name} description={description} />
+            </div>
           </div>
-
-          <div>
-            <label className="text-sm font-semibold text-foreground flex items-center gap-1">
-              <Link className="w-4 h-4 text-muted-foreground" />
-              File URL
-            </label>
-            <input
-              value={fileUrl}
-              onChange={(e) => setFileUrl(e.target.value)}
-              className="mt-2 h-11 w-full rounded-xl border-2 border-border bg-background px-4 text-sm font-medium outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted-foreground"
-              placeholder="https://..."
-            />
-          </div>
-        </div>
-
-        <div className="mt-5">
-          <Button 
-            onClick={onCreate} 
-            disabled={!canCreate} 
-            variant="forest"
-            size="lg"
-            className="hover-jelly"
-          >
-            {submitting ? (
-              <>
-                <span className="animate-spin">⏳</span>
-                Đang tạo...
-              </>
-            ) : (
-              <>
-                <Plus className="w-5 h-5" />
-                Tạo gói
-              </>
-            )}
-          </Button>
         </div>
       </div>
 
@@ -209,13 +265,13 @@ export default function PackagesPage() {
                   <th className="px-4 py-3 font-bold text-foreground">
                     <div className="flex items-center gap-2">
                       <FileText className="w-4 h-4 text-muted-foreground" />
-                      Mô tả
+                      Mô tả / Tính năng
                     </div>
                   </th>
-                  <th className="px-4 py-3 font-bold text-foreground">
+                  <th className="px-4 py-3 font-bold text-foreground w-48">
                     <div className="flex items-center gap-2">
-                      <Link className="w-4 h-4 text-muted-foreground" />
-                      File URL
+                      <Eye className="w-4 h-4 text-muted-foreground" />
+                      Xem trước
                     </div>
                   </th>
                   <th className="px-4 py-3 font-bold text-foreground text-center w-32">
@@ -249,31 +305,33 @@ export default function PackagesPage() {
                               className="h-9 w-full rounded-lg border-2 border-primary bg-background px-3 text-sm font-medium outline-none"
                               placeholder="Tên gói"
                             />
-                          </td>
-                          <td className="px-4 py-3">
-                            <input
-                              value={edit.description}
-                              onChange={(e) => setEdit({ ...edit, description: e.target.value })}
-                              className="h-9 w-full rounded-lg border-2 border-border bg-background px-3 text-sm font-medium outline-none focus:border-primary"
-                              placeholder="Mô tả"
-                            />
-                          </td>
-                          <td className="px-4 py-3">
                             <input
                               value={edit.fileUrl}
                               onChange={(e) => setEdit({ ...edit, fileUrl: e.target.value })}
-                              className="h-9 w-full rounded-lg border-2 border-border bg-background px-3 text-sm font-medium outline-none focus:border-primary"
-                              placeholder="https://..."
+                              className="h-9 w-full mt-2 rounded-lg border-2 border-border bg-background px-3 text-sm font-medium outline-none focus:border-primary"
+                              placeholder="File URL"
                             />
                           </td>
                           <td className="px-4 py-3">
-                            <div className="flex items-center justify-center gap-2">
+                            <textarea
+                              value={edit.description}
+                              onChange={(e) => setEdit({ ...edit, description: e.target.value })}
+                              rows={4}
+                              className="w-full rounded-lg border-2 border-border bg-background px-3 py-2 text-sm font-medium outline-none focus:border-primary resize-none"
+                              placeholder="Tính năng 1,Tính năng 2,..."
+                            />
+                          </td>
+                          <td className="px-4 py-3">
+                            <PackagePreviewCard name={edit.name} description={edit.description} />
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex flex-col items-center gap-2">
                               <Button
                                 size="sm"
                                 variant="forest"
                                 onClick={onSaveEdit}
                                 disabled={busy || edit.name.trim().length === 0}
-                                className="hover-jelly"
+                                className="hover-jelly w-full"
                               >
                                 {busy ? "..." : "Lưu"}
                               </Button>
@@ -282,6 +340,7 @@ export default function PackagesPage() {
                                 variant="outline"
                                 onClick={() => setEdit(null)}
                                 disabled={busy}
+                                className="w-full"
                               >
                                 Hủy
                               </Button>
@@ -298,34 +357,52 @@ export default function PackagesPage() {
                               </div>
                               <div>
                                 <div className="font-bold text-foreground">{pkg.name}</div>
-                                <div className="text-xs text-muted-foreground font-mono truncate max-w-[200px]">
-                                  {pkg.id}
-                                </div>
+                                {pkg.fileUrl && (
+                                  <a
+                                    href={pkg.fileUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="flex items-center gap-1 text-xs text-primary hover:underline"
+                                  >
+                                    <Link className="w-3 h-3" />
+                                    <span className="truncate max-w-[150px]">Download</span>
+                                  </a>
+                                )}
                               </div>
                             </div>
                           </td>
                           <td className="px-4 py-3">
-                            <span className="text-muted-foreground line-clamp-2">
-                              {pkg.description || "-"}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3">
-                            {pkg.fileUrl ? (
-                              <a
-                                href={pkg.fileUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="flex items-center gap-2 text-primary hover:underline underline-offset-2 max-w-[250px]"
-                              >
-                                <Link className="w-4 h-4 shrink-0" />
-                                <span className="truncate">{pkg.fileUrl}</span>
-                              </a>
+                            {pkg.description ? (
+                              <ul className="space-y-1">
+                                {pkg.description.split(',').map((feature, idx) => (
+                                  <li key={idx} className="flex items-start gap-1.5 text-xs text-muted-foreground">
+                                    <Check className="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+                                    <span>{feature.trim()}</span>
+                                  </li>
+                                ))}
+                              </ul>
                             ) : (
                               <span className="text-muted-foreground">-</span>
                             )}
                           </td>
                           <td className="px-4 py-3">
+                            <PackagePreviewCard name={pkg.name} description={pkg.description ?? ""} />
+                          </td>
+                          <td className="px-4 py-3">
                             <div className="flex items-center justify-center gap-2">
+                              <Button
+                                size="sm"
+                                variant={copiedId === pkg.id ? "forest" : "ghost"}
+                                onClick={() => handleCopyId(pkg.id)}
+                                title={copiedId === pkg.id ? "Đã copy!" : `Copy ID: ${pkg.id}`}
+                                className="hover-jelly transition-all"
+                              >
+                                {copiedId === pkg.id ? (
+                                  <CheckCheck className="w-4 h-4" />
+                                ) : (
+                                  <Copy className="w-4 h-4" />
+                                )}
+                              </Button>
                               <Button
                                 size="sm"
                                 variant="outline"

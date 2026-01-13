@@ -1,0 +1,258 @@
+@import '@fontsource/nunito/400.css';
+@import '@fontsource/nunito/600.css';
+@import '@fontsource/nunito/700.css';
+@import '@fontsource/nunito/800.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Core Game Colors */
+    --background: 45 33% 97%;
+    --foreground: 142 40% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 142 40% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 142 40% 15%;
+
+    /* Forest Green Primary */
+    --primary: 142 69% 58%;
+    --primary-foreground: 142 40% 10%;
+
+    /* Golden Yellow Secondary */
+    --secondary: 45 96% 53%;
+    --secondary-foreground: 45 90% 15%;
+
+    --muted: 45 20% 90%;
+    --muted-foreground: 142 20% 40%;
+
+    --accent: 142 50% 85%;
+    --accent-foreground: 142 40% 15%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 142 30% 85%;
+    --input: 142 30% 85%;
+    --ring: 142 69% 58%;
+
+    --radius: 1rem;
+
+    /* Custom Game Theme Colors */
+    --forest: 142 69% 58%;
+    --forest-dark: 142 60% 35%;
+    --gold: 45 96% 53%;
+    --gold-dark: 45 90% 45%;
+    --cream: 45 33% 97%;
+    --cream-dark: 45 25% 92%;
+    --magic-purple: 270 60% 65%;
+    --magic-pink: 330 70% 70%;
+
+    /* Glass Effect */
+    --glass-bg: 0 0% 100% / 0.7;
+    --glass-border: 0 0% 100% / 0.3;
+    --glass-shadow: 142 40% 15% / 0.1;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(142 69% 58% / 0.15) 0%, hsl(45 96% 53% / 0.15) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(45 96% 53%) 0%, hsl(35 95% 55%) 100%);
+    --gradient-forest: linear-gradient(135deg, hsl(142 69% 58%) 0%, hsl(152 60% 50%) 100%);
+    --gradient-magic: linear-gradient(135deg, hsl(270 60% 65%) 0%, hsl(330 70% 70%) 100%);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 142 30% 8%;
+    --foreground: 45 30% 95%;
+
+    --card: 142 25% 12%;
+    --card-foreground: 45 30% 95%;
+
+    --popover: 142 25% 12%;
+    --popover-foreground: 45 30% 95%;
+
+    --primary: 142 69% 58%;
+    --primary-foreground: 142 40% 10%;
+
+    --secondary: 45 96% 53%;
+    --secondary-foreground: 45 90% 15%;
+
+    --muted: 142 20% 18%;
+    --muted-foreground: 45 15% 65%;
+
+    --accent: 142 30% 20%;
+    --accent-foreground: 45 30% 95%;
+
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 142 20% 20%;
+    --input: 142 20% 20%;
+    --ring: 142 69% 58%;
+
+    --glass-bg: 142 25% 12% / 0.8;
+    --glass-border: 142 30% 25% / 0.5;
+    --glass-shadow: 0 0% 0% / 0.3;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-nunito antialiased;
+  }
+}
+
+@layer utilities {
+  /* Glassmorphism */
+  .glass {
+    @apply bg-white/70 backdrop-blur-xl border border-white/30 shadow-xl;
+  }
+
+  .glass-card {
+    @apply bg-white/60 backdrop-blur-lg border border-white/40 shadow-lg;
+  }
+
+  /* Glow Effects */
+  .glow-green {
+    box-shadow: 0 0 20px hsl(142 69% 58% / 0.4), 0 0 40px hsl(142 69% 58% / 0.2);
+  }
+
+  .glow-gold {
+    box-shadow: 0 0 20px hsl(45 96% 53% / 0.5), 0 0 40px hsl(45 96% 53% / 0.3);
+  }
+
+  .glow-magic {
+    box-shadow: 0 0 25px hsl(270 60% 65% / 0.4), 0 0 50px hsl(330 70% 70% / 0.2);
+  }
+
+  /* Text Gradients */
+  .text-gradient-gold {
+    @apply bg-gradient-to-r from-gold to-gold-dark bg-clip-text text-transparent;
+  }
+
+  .text-gradient-forest {
+    @apply bg-gradient-to-r from-forest to-forest-dark bg-clip-text text-transparent;
+  }
+
+  /* Animations */
+  @keyframes levitate {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-15px);
+    }
+  }
+
+  @keyframes jelly {
+    0%, 100% {
+      transform: scale(1);
+    }
+    25% {
+      transform: scale(0.95, 1.05);
+    }
+    50% {
+      transform: scale(1.05, 0.95);
+    }
+    75% {
+      transform: scale(0.98, 1.02);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 20px hsl(45 96% 53% / 0.5), 0 0 40px hsl(45 96% 53% / 0.3);
+    }
+    50% {
+      box-shadow: 0 0 30px hsl(45 96% 53% / 0.7), 0 0 60px hsl(45 96% 53% / 0.4);
+    }
+  }
+
+  @keyframes float-particle {
+    0%, 100% {
+      transform: translateY(0) translateX(0) rotate(0deg);
+      opacity: 0.6;
+    }
+    25% {
+      transform: translateY(-20px) translateX(10px) rotate(90deg);
+      opacity: 1;
+    }
+    50% {
+      transform: translateY(-40px) translateX(-5px) rotate(180deg);
+      opacity: 0.8;
+    }
+    75% {
+      transform: translateY(-20px) translateX(15px) rotate(270deg);
+      opacity: 1;
+    }
+  }
+
+  .animate-levitate {
+    animation: levitate 3s ease-in-out infinite;
+  }
+
+  .animate-jelly {
+    animation: jelly 0.5s ease-in-out;
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(45 96% 53% / 0) 0%,
+      hsl(45 96% 53% / 0.5) 50%,
+      hsl(45 96% 53% / 0) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .animate-float-particle {
+    animation: float-particle 6s ease-in-out infinite;
+  }
+
+  /* Hover Effects */
+  .hover-jelly:hover {
+    animation: jelly 0.5s ease-in-out;
+  }
+
+  .hover-lift {
+    @apply transition-all duration-300;
+  }
+
+  .hover-lift:hover {
+    @apply -translate-y-1 shadow-2xl;
+  }
+}

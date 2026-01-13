@@ -34,7 +34,7 @@ async function createPackage({ name, description, fileUrl, createdBy }) {
 }
 
 async function listPackages() {
-  return Package.findAll({ order: [["createdAt", "DESC"]] });
+  return Package.findAll({ order: [["order", "ASC"], ["createdAt", "ASC"]] });
 }
 
 async function getPackageById(id) {

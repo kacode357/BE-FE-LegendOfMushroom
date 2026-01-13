@@ -16,6 +16,8 @@ async function initDatabase() {
   require("../entities/package/package.model");
   require("../entities/access/access.model");
   require("../entities/notification/notification.model");
+  require("../entities/contact/contact.model");
+  require("../entities/member/member.model");
 
   await sequelize.authenticate();
 
@@ -24,7 +26,8 @@ async function initDatabase() {
     await sequelize.drop();
   }
 
-  await sequelize.sync();
+  // Use alter: true to update existing tables with new columns
+  await sequelize.sync({ alter: true });
 }
 
 module.exports = { initDatabase };

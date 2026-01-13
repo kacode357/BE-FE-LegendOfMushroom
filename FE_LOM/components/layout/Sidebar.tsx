@@ -13,6 +13,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Menu,
+  MessageSquare,
+  Shield,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -21,6 +23,8 @@ const NAV_ITEMS = [
   { href: "/notifications", label: "Thông báo", icon: Bell },
   { href: "/access-codes", label: "Mã truy cập", icon: KeyRound },
   { href: "/registered-users", label: "User đã đăng ký", icon: Users },
+  { href: "/contacts", label: "Yêu cầu hỗ trợ", icon: MessageSquare },
+  { href: "/users", label: "Quản lý User", icon: Shield },
 ];
 
 function isActive(pathname: string, href: string) {

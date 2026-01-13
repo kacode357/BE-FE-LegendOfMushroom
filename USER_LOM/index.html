@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KaKernel</title>
+    <meta name="description" content="KaKernel" />
+    <meta name="author" content="KaKernel" />
+
+    <link rel="icon" type="image/jpeg" href="/logo.jpg" />
+    <link rel="apple-touch-icon" href="/logo.jpg" />
+
+    <meta property="og:title" content="KaKernel" />
+    <meta property="og:description" content="KaKernel" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/logo.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@KaKernel" />
+    <meta name="twitter:image" content="/logo.jpg" />
+  </head>
+
+  <body>
+    <div id="root">
+      <style>
+        @keyframes shimmer {
+          0% { background-position: -1000px 0; }
+          100% { background-position: 1000px 0; }
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+        .loading-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+          padding: 20px;
+        }
+        .loading-content {
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          border-radius: 20px;
+          padding: 40px;
+          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        .loading-title {
+          color: white;
+          font-size: 24px;
+          font-weight: 600;
+          margin-bottom: 30px;
+          text-align: center;
+          animation: pulse 2s ease-in-out infinite;
+        }
+        .loading-bar-container {
+          width: 300px;
+          height: 8px;
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 10px;
+          overflow: hidden;
+          position: relative;
+        }
+        .loading-bar {
+          height: 100%;
+          background: linear-gradient(90deg, 
+            rgba(255, 255, 255, 0.3) 0%, 
+            rgba(255, 255, 255, 0.8) 50%, 
+            rgba(255, 255, 255, 0.3) 100%
+          );
+          background-size: 1000px 100%;
+          animation: shimmer 2s infinite linear;
+          border-radius: 10px;
+        }
+        .loading-dots {
+          display: flex;
+          gap: 8px;
+          margin-top: 20px;
+          justify-content: center;
+        }
+        .dot {
+          width: 10px;
+          height: 10px;
+          background: white;
+          border-radius: 50%;
+          animation: pulse 1.4s ease-in-out infinite;
+        }
+        .dot:nth-child(2) {
+          animation-delay: 0.2s;
+        }
+        .dot:nth-child(3) {
+          animation-delay: 0.4s;
+        }
+      </style>
+      <div class="loading-container">
+        <div class="loading-content">
+          <div class="loading-title">Loading...</div>
+          <div class="loading-bar-container">
+            <div class="loading-bar"></div>
+          </div>
+          <div class="loading-dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <noscript>
+      <div style="padding:16px;font-family:system-ui, -apple-system, Segoe UI, Roboto, sans-serif;">
+        This site requires JavaScript to run.
+      </div>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

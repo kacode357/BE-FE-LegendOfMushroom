@@ -15,15 +15,55 @@ const Package = sequelize.define(
       allowNull: false,
       unique: true,
     },
+    nameEn: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: "",
+    },
     description: {
       type: DataTypes.TEXT,
       allowNull: false,
       defaultValue: "",
     },
+    price: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "Miễn Phí",
+    },
+    priceEn: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "Free",
+    },
+    features: {
+      type: DataTypes.JSON,
+      allowNull: false,
+      defaultValue: [],
+    },
+    featuresEn: {
+      type: DataTypes.JSON,
+      allowNull: false,
+      defaultValue: [],
+    },
     fileUrl: {
       type: DataTypes.TEXT,
       allowNull: false,
       defaultValue: "",
+    },
+    gradient: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "from-blue-500 via-blue-400 to-cyan-500",
+    },
+    order: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
     },
     // Admin user id (jwt sub) who created it.
     createdBy: {
