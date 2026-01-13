@@ -1,7 +1,5 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useLogout } from "@/hooks/auth/useLogout";
 import { LogOut, User } from "lucide-react";

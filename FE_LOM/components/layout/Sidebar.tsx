@@ -33,22 +33,9 @@ interface SidebarProps {
   onToggle: () => void;
 }
 
-export function Sidebar({ collapsed, onToggle }: SidebarProps) {
-  const pathname = usePathname();
-  const [isMobile, setIsMobile] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  // Mobile menu button
-  const MobileMenuButton = () => (
+// Mobile menu button component
+function MobileMenuButton({ mobileOpen, setMobileOpen }: { mobileOpen: boolean; setMobileOpen: (open: boolean) => void }) {
+  return (
     <button
       onClick={() => setMobileOpen(!mobileOpen)}
       className="fixed top-4 left-4 z-50 md:hidden p-2 rounded-xl bg-gradient-forest text-primary-foreground shadow-lg hover-jelly"
@@ -56,9 +43,17 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       <Menu className="w-5 h-5" />
     </button>
   );
+}
 
-  // Sidebar content
-  const SidebarContent = () => (
+// Sidebar content component
+function SidebarContent({ collapsed, onToggle, isMobile, setMobileOpen, pathname }: { 
+  collapsed: boolean; 
+  onToggle: () => void; 
+  isMobile: boolean; 
+  setMobileOpen: (open: boolean) => void;
+  pathname: string;
+}) {
+  return (
     <>
       {/* Logo Section */}
       <div className="p-4 border-b border-sidebar-border">
@@ -136,11 +131,26 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       )}
     </>
   );
+}
+
+export function Sidebar({ collapsed, onToggle }: SidebarProps) {
+  const pathname = usePathname();
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   return (
     <>
       {/* Mobile Menu Button */}
-      {isMobile && <MobileMenuButton />}
+      {isMobile && <MobileMenuButton mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />}
 
       {/* Mobile Overlay */}
       {isMobile && mobileOpen && (
@@ -163,7 +173,13 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           }
         `}
       >
-        <SidebarContent />
+        <SidebarContent 
+          collapsed={collapsed} 
+          onToggle={onToggle} 
+          isMobile={isMobile} 
+          setMobileOpen={setMobileOpen}
+          pathname={pathname}
+        />
       </aside>
     </>
   );
