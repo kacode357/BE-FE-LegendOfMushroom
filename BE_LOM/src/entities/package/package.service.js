@@ -33,8 +33,17 @@ async function createPackage({ name, description, fileUrl, createdBy }) {
   }
 }
 
+// List all packages (for admin - includes hidden)
 async function listPackages() {
   return Package.findAll({ order: [["order", "ASC"], ["createdAt", "ASC"]] });
+}
+
+// List public packages (for users - excludes hidden)
+async function listPackagesPublic() {
+  return Package.findAll({ 
+    where: { isHidden: false },
+    order: [["order", "ASC"], ["createdAt", "ASC"]] 
+  });
 }
 
 async function getPackageById(id) {
@@ -68,6 +77,7 @@ async function updatePackage(id, patch) {
   }
   if (patch.description !== undefined) next.description = patch.description;
   if (patch.fileUrl !== undefined) next.fileUrl = patch.fileUrl;
+  if (patch.isHidden !== undefined) next.isHidden = patch.isHidden;
 
   try {
     await doc.update(next);
@@ -93,6 +103,7 @@ async function deletePackage(id) {
 module.exports = {
   createPackage,
   listPackages,
+  listPackagesPublic,
   getPackageById,
   updatePackage,
   deletePackage,

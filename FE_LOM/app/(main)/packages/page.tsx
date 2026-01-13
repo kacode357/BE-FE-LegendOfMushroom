@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { usePackages } from "@/hooks/package/usePackages";
-import { Package, Plus, RefreshCw, Sparkles, Edit3, Trash2, Link, FileText, Eye, Check, X, Copy, CheckCheck } from "lucide-react";
+import { Package, Plus, RefreshCw, Sparkles, Edit3, Trash2, Link, FileText, Eye, EyeOff, Check, X, Copy, CheckCheck } from "lucide-react";
 
 type EditState = {
   id: string;
@@ -57,6 +57,7 @@ export default function PackagesPage() {
   const [edit, setEdit] = useState<EditState | null>(null);
   const [cardSubmitting, setCardSubmitting] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [togglingHidden, setTogglingHidden] = useState<string | null>(null);
 
   async function handleCopyId(id: string) {
     await navigator.clipboard.writeText(id);
@@ -102,6 +103,12 @@ export default function PackagesPage() {
     setCardSubmitting(id);
     await remove(id);
     setCardSubmitting(null);
+  }
+
+  async function onToggleHidden(id: string, currentHidden: boolean) {
+    setTogglingHidden(id);
+    await patch(id, { isHidden: !currentHidden });
+    setTogglingHidden(null);
   }
 
   return (
@@ -274,6 +281,12 @@ export default function PackagesPage() {
                       Xem trước
                     </div>
                   </th>
+                  <th className="px-4 py-3 font-bold text-foreground text-center w-24">
+                    <div className="flex items-center justify-center gap-2">
+                      <Eye className="w-4 h-4 text-muted-foreground" />
+                      Hiển thị
+                    </div>
+                  </th>
                   <th className="px-4 py-3 font-bold text-foreground text-center w-32">
                     Thao tác
                   </th>
@@ -283,6 +296,8 @@ export default function PackagesPage() {
                 {items.map((pkg, index) => {
                   const isEditing = edit?.id === pkg.id;
                   const busy = cardSubmitting === pkg.id;
+                  const isHidden = pkg.isHidden ?? false;
+                  const togglingThis = togglingHidden === pkg.id;
 
                   return (
                     <tr
@@ -290,9 +305,11 @@ export default function PackagesPage() {
                       className={`border-b border-border last:border-b-0 transition-colors ${
                         isEditing 
                           ? 'bg-primary/10' 
-                          : index % 2 === 0 
-                            ? 'bg-background hover:bg-accent/30' 
-                            : 'bg-accent/10 hover:bg-accent/30'
+                          : isHidden
+                            ? 'bg-yellow-500/10 hover:bg-yellow-500/20'
+                            : index % 2 === 0 
+                              ? 'bg-background hover:bg-accent/30' 
+                              : 'bg-accent/10 hover:bg-accent/30'
                       }`}
                     >
                       {isEditing ? (
@@ -323,6 +340,18 @@ export default function PackagesPage() {
                           </td>
                           <td className="px-4 py-3">
                             <PackagePreviewCard name={edit.name} description={edit.description} />
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center justify-center">
+                              <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                                isHidden 
+                                  ? 'bg-yellow-500/20 text-yellow-600' 
+                                  : 'bg-green-500/20 text-green-600'
+                              }`}>
+                                {isHidden ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                                {isHidden ? 'Ẩn' : 'Hiện'}
+                              </span>
+                            </div>
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex flex-col items-center gap-2">
@@ -387,6 +416,26 @@ export default function PackagesPage() {
                           </td>
                           <td className="px-4 py-3">
                             <PackagePreviewCard name={pkg.name} description={pkg.description ?? ""} />
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center justify-center">
+                              <Button
+                                size="sm"
+                                variant={isHidden ? "outline" : "forest"}
+                                onClick={() => onToggleHidden(pkg.id, isHidden)}
+                                disabled={togglingThis}
+                                className="hover-jelly"
+                                title={isHidden ? "Nhấn để hiện gói" : "Nhấn để ẩn gói"}
+                              >
+                                {togglingThis ? (
+                                  <span className="animate-spin">⏳</span>
+                                ) : isHidden ? (
+                                  <EyeOff className="w-4 h-4 text-yellow-600" />
+                                ) : (
+                                  <Eye className="w-4 h-4" />
+                                )}
+                              </Button>
+                            </div>
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center justify-center gap-2">

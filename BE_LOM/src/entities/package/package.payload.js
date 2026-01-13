@@ -14,8 +14,9 @@ function normalizeUpdatePackagePayload(payload) {
   const description =
     typeof data.description === "string" ? data.description.trim() : undefined;
   const fileUrl = typeof data.fileUrl === "string" ? data.fileUrl.trim() : undefined;
+  const isHidden = typeof data.isHidden === "boolean" ? data.isHidden : undefined;
 
-  return { name, description, fileUrl };
+  return { name, description, fileUrl, isHidden };
 }
 
 module.exports = { normalizeCreatePackagePayload, normalizeUpdatePackagePayload };

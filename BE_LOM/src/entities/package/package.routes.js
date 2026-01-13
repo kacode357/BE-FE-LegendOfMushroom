@@ -1,7 +1,7 @@
 const express = require("express");
 const { authenticateAny } = require("../../middleware/authAny");
 const { authorizeRoles } = require("../../middleware/auth");
-const { create, list, get, patch, remove } = require("./package.controller");
+const { create, list, listPublic, get, patch, remove } = require("./package.controller");
 
 const router = express.Router();
 
@@ -11,7 +11,8 @@ const router = express.Router();
  *   get:
  *     tags:
  *       - Packages
- *     summary: List packages
+ *     summary: List public packages (excludes hidden packages)
+ *     description: Returns only visible packages for public/user access
  *     responses:
  *       200:
  *         description: OK
@@ -53,7 +54,48 @@ const router = express.Router();
  *                         description: "Gói cơ bản"
  *                         fileUrl: "https://example.com/basic.zip"
  */
-router.get("/", list);
+router.get("/", listPublic);
+
+/**
+ * @openapi
+ * /api/packages/admin:
+ *   get:
+ *     tags:
+ *       - Packages
+ *     summary: List all packages (admin only, includes hidden)
+ *     description: Returns all packages including hidden ones for admin management
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 status: { type: number, example: 200 }
+ *                 message: { type: string, example: "ok" }
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id: { type: string }
+ *                           name: { type: string }
+ *                           description: { type: string }
+ *                           fileUrl: { type: string }
+ *                           isHidden: { type: boolean }
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ */
+router.get("/admin", authenticateAny, authorizeRoles("admin"), list);
 
 /**
  * @openapi
@@ -129,6 +171,7 @@ router.post("/", authenticateAny, authorizeRoles("admin"), create);
  *               name: { type: string }
  *               description: { type: string }
  *               fileUrl: { type: string }
+ *               isHidden: { type: boolean, description: "Hide package from public API" }
  *     responses:
  *       200:
  *         description: Updated

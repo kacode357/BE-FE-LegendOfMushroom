@@ -6,8 +6,9 @@ import type { UpdatePackagePayload } from "@/types/package/payload/updatePackage
 import type { PackageDto } from "@/types/package/response/package.response";
 import type { ListPackagesResponse } from "@/types/package/response/listPackages.response";
 
+// Admin list - includes hidden packages
 export async function listPackages(): Promise<ListPackagesResponse> {
-  const response = await axiosClient.get<ApiSuccessResponse<ListPackagesResponse>>("/api/packages");
+  const response = await axiosClient.get<ApiSuccessResponse<ListPackagesResponse>>("/api/packages/admin");
   return response.data.data;
 }
 

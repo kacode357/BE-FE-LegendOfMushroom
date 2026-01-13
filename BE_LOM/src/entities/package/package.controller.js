@@ -6,6 +6,7 @@ const {
 const {
   createPackage,
   listPackages,
+  listPackagesPublic,
   getPackageById,
   updatePackage,
   deletePackage,
@@ -37,6 +38,30 @@ async function create(req, res, next) {
 async function list(_req, res, next) {
   try {
     const docs = await listPackages();
+    return sendSuccess(res, {
+      message: "ok",
+      data: {
+        items: docs.map((doc) => ({
+          id: String(doc.id),
+          name: doc.name,
+          description: doc.description,
+          fileUrl: doc.fileUrl,
+          isHidden: doc.isHidden,
+          createdBy: doc.createdBy,
+          createdAt: doc.createdAt,
+          updatedAt: doc.updatedAt,
+        })),
+      },
+    });
+  } catch (err) {
+    return next(err);
+  }
+}
+
+// Public list - excludes hidden packages (for users/public API)
+async function listPublic(_req, res, next) {
+  try {
+    const docs = await listPackagesPublic();
     return sendSuccess(res, {
       message: "ok",
       data: {
@@ -88,6 +113,7 @@ async function patch(req, res, next) {
         name: doc.name,
         description: doc.description,
         fileUrl: doc.fileUrl,
+        isHidden: doc.isHidden,
         createdBy: doc.createdBy,
         createdAt: doc.createdAt,
         updatedAt: doc.updatedAt,
@@ -110,4 +136,4 @@ async function remove(req, res, next) {
   }
 }
 
-module.exports = { create, list, get, patch, remove };
+module.exports = { create, list, listPublic, get, patch, remove };

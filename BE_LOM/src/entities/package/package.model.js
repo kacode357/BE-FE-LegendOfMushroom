@@ -65,6 +65,12 @@ const Package = sequelize.define(
       allowNull: false,
       defaultValue: true,
     },
+    // Hidden from public API (users won't see this package)
+    isHidden: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     // Admin user id (jwt sub) who created it.
     createdBy: {
       type: DataTypes.STRING,
