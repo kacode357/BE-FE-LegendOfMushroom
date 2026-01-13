@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { getApiErrorMessage } from "@/config/axios";
 import { logout } from "@/services/auth.service";
+import { AUTH_TOKEN_KEY } from "@/constants/auth";
 
 export function useLogout() {
   const router = useRouter();
@@ -20,6 +21,8 @@ export function useLogout() {
       await logout();
       // Clear auth flag cookie on frontend domain
       document.cookie = "auth=; path=/; max-age=0";
+      // Xóa token khỏi localStorage
+      localStorage.removeItem(AUTH_TOKEN_KEY);
       ok = true;
     } catch (err: unknown) {
       setError(getApiErrorMessage(err));
